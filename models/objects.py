@@ -25,7 +25,7 @@ class FileModel(db.Model):
 
     def __init__(self,name,owner_email,
                  description='',location='.',
-                 _type=FileEnum.directory, _size=0.0, filetype='None'):
+                 _type=FileEnum.file, _size=0.0, filetype='None'):
 
         self.name = name
         self.owner_email = owner_email
@@ -45,7 +45,7 @@ class FileModel(db.Model):
 
     def array_repr(self):
 
-        return [self.name,self.size,self.date,self.description]
+        return [self.name,self.size,str(self.updated_on),self.description]
 
 
     @staticmethod

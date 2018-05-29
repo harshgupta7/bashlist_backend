@@ -1,22 +1,21 @@
 from flask_restful import Resource,reqparse
 from models.users import UserModel
+from flask_jwt import jwt_required,current_identity
 
 
 class ListFiles(Resource):
 
-	# parser = reqparse.RequestParser()
-	# parser.add_argument('filename',type=str,required=True,help='filename is a required field')
-	# parser.add_argument('password',type=str,required=True,help='password is a required field')
+	@jwt_required()
+	def get(self):
 
-	def get(self,email):
+		'''Method to return array representation of all files of user making request'''
 
-		user = UserModel.find_by_email(email)
+		user = UserModel.find_by_email(current_identity.email)
 		if not user:
 			return {'BLCODE':'XEF23'}
 
 		return user.list_all_files()
 
-	# def post(self,email):
 
 
 
