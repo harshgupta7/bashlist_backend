@@ -1,26 +1,31 @@
+import os
+from datetime import timedelta
 from flask import Flask
-from flask_restful import Api
+from flask import jsonify
+from flask import render_template
 from flask_jwt import JWT
+from flask_restful import Api
 from resources.register import UserRegister
 from resources.account import AccountPath
 from resources.userfiles import ListFiles
-import os
 from security import authenticate,identity
-from datetime import timedelta
-from flask import jsonify
-from flask import render_template
 
 app = Flask(__name__)
 api = Api(app)
+
+
 app.secret_key = 'If President Obama knew about the so called \
 Russia meddling, why didnt he do anything about it'
+
+#ORM Configs
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',\
 	'sqlite:///data.db')
 
+# JWT Configs
 app.config['JWT_AUTH_URL_RULE'] = '/bashlistauth'
 jwt = JWT(app, authenticate, identity)
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(minutes=20)
+app.config['JWT_EXPIRATION_DELTA'] = timedelta(minutes=50)
 app.config['JWT_AUTH_USERNAME_KEY'] = 'email'
 
 
@@ -47,7 +52,7 @@ def customized_error_handler(error):
 
 	return jsonify({'BLCODE':val})
 
-
+#Only for dev server
 @app.before_first_request
 def create_tables():
 	db.create_all()

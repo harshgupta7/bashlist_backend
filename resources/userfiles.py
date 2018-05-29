@@ -1,6 +1,8 @@
-from flask_restful import Resource,reqparse
+from flask_jwt import current_identity
+from flask_jwt import jwt_required
+from flask_restful import Resource
+from flask_restful import reqparse
 from models.users import UserModel
-from flask_jwt import jwt_required,current_identity
 
 
 class ListFiles(Resource):
