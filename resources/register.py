@@ -25,13 +25,18 @@ class UserRegister(Resource):
 		user.save_to_db()
 		return {'BLCODE':'USD23'}
 
+	
+
+	############ FOR TESTING PURPOSES ONLY ##############
+
 	@jwt_required()
 	def get(self):
 
 		# pub_key = PubKeyModel('dsdsdsd','harsh')
 		# pub_key.save_to_db()
 		print(current_identity.email)
-		file = FileModel('asas','harsh')
+		file = FileModel('adsadassas','harsh')
 		file.save_to_db()
-		return {'message':'work'}
+		return {'message':'works'}
 
+	#####################################################

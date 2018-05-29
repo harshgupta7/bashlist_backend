@@ -24,8 +24,6 @@ app.config['JWT_EXPIRATION_DELTA'] = timedelta(minutes=20)
 app.config['JWT_AUTH_USERNAME_KEY'] = 'email'
 
 
-from flask import render_template
-
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html')
