@@ -21,3 +21,7 @@ class ListFiles(Resource):
 
 
 
+class SyncUp(Resource):
+
+	@jwt_required
+	

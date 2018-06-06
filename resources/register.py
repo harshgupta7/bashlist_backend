@@ -18,7 +18,6 @@ class UserRegister(Resource):
 		parser = reqparse.RequestParser()
 		data = UserRegister.parser.parse_args()
 
-
 		if UserModel.find_by_email(data['email']):
 			return {'BLCODE':'X2ISD'}
 

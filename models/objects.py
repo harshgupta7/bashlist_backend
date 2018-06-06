@@ -18,6 +18,7 @@ class FileModel(db.Model):
     name = db.Column(db.String, nullable=False)
     size = db.Column(db.Float, nullable=False, default=0.0)
     location = db.Column(db.String, nullable=False, default='.')
+
     type_ = db.Column(db.Enum(FileEnum),default=FileEnum.file)
     description = db.Column(db.String, default='')
     filetype = db.Column(db.String, default='None')
