@@ -3,7 +3,6 @@ from flask_jwt import current_identity
 from flask_jwt import jwt_required
 from flask_restful import Resource
 from flask_restful import reqparse
-from models.pubkeys import PubKeyModel
 from models.objects import FileModel
 from models.users import UserModel
 

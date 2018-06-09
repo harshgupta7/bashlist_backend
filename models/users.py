@@ -12,7 +12,6 @@ class UserModel(db.Model):
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
     verified = db.Column(db.Boolean, nullable=False, default=False)
     size_used = db.Column(db.Float, default=0.0)
-    pub_keys = db.relationship('PubKeyModel', lazy='dynamic')
     files = db.relationship('FileModel', lazy='dynamic')
 
     def __init__(self, email, password):
@@ -33,12 +32,6 @@ class UserModel(db.Model):
     def is_verified(self):
 
         return self.verified
-
-    def get_all_keys(self):
-
-        return {
-            'keys': [key.__str__() for key in self.pub_keys.all()]
-        }
 
     def get_all_file_names(self):
 
