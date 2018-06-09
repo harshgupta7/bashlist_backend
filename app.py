@@ -57,9 +57,13 @@ def customized_error_handler(error):
 def create_tables():
 	db.create_all()
 
+
+### ENDPOINTS ______________________________
+
 api.add_resource(UserRegister,'/register')
 api.add_resource(AccountPath,'/account')
 api.add_resource(ListFiles,'/getallfiles')
+# api.add_resource()
 
 
 if __name__ == '__main__':
