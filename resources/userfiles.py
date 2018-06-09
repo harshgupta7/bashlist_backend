@@ -26,16 +26,16 @@ class ListFiles(Resource):
 
 
 
-class File(Resource):
+class FileUpload(Resource):
 
 	parser = reqparse.RequestParser()
 	parser.add_argument('description', type=str, required=False)
 
 	@jwt_required()
-	def post(self,name):
+	def post(self):
 
 		parser = reqparse.RequestParser()
-		data = File.parser.parse_args()
+		data = FileUpload.parser.parse_args()
 		if 'description' in data.keys():
 			desc = data['description']
 		else:
@@ -50,21 +50,33 @@ class File(Resource):
 
 		record =  FileModel(filename,saved_as,current_identity.id,desc,size) 
 		record.save_to_db()
-		return "SUCCESS"
+		return {'BLCODE':"LMV23"}
 
+class FileGet(Resource):
 	@jwt_required()
 	def get(self,name):
-		
+
 		if name not in current_identity.get_all_file_names()['files']:
 			return "FAILURE"
 		else:
 			loc = current_identity.location
 			file = FileModel.find_by_owner_name(current_identity.id,name)
 			path = '{}/{}'.format(loc,file.saved_as)
-			send_file(path,as_attachment=False,attachment_filename=name)
-			return "PASS"
+			return send_file(path,as_attachment=False,attachment_filename=name)
+			# return "PASS"
 
 	@jwt_required()
 	def delete(self,name):
 		pass 
+
+
+class TestUpload(Resource):
+	def post(self):
+		file = request.files['file']
+		filename = file.filename
+		saved_as = secure_filename(filename)
+		path = UserModel.find_by_email("harsh").location
+		file.save('{}/{}'.format(path,saved_as))
+		return {'BLCODE':"SUCCESS"}
+
 

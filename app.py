@@ -7,7 +7,7 @@ from flask_jwt import JWT
 from flask_restful import Api
 from resources.register import UserRegister
 from resources.account import AccountPath
-from resources.userfiles import ListFiles,File
+from resources.userfiles import ListFiles,FileUpload,FileGet,TestUpload
 from security import authenticate,identity
 
 app = Flask(__name__)
@@ -25,7 +25,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',\
 # JWT Configs
 app.config['JWT_AUTH_URL_RULE'] = '/bashlistauth'
 jwt = JWT(app, authenticate, identity)
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=6)
+app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=236)
 app.config['JWT_AUTH_USERNAME_KEY'] = 'Email'
 app.config['JWT_AUTH_PASSWORD_KEY'] = 'Password'
 
@@ -64,8 +64,9 @@ def create_tables():
 api.add_resource(UserRegister,'/register')
 api.add_resource(AccountPath,'/account')
 api.add_resource(ListFiles,'/getallfiles')
-api.add_resource(File,'/filesync/<string:name>')
-# api.add_resource()
+api.add_resource(FileUpload,'/filesync')
+# api.add_resource(TestUpload,'/TestUpload')
+api.add_resource(FileGet,'/filedown')
 
 
 if __name__ == '__main__':
