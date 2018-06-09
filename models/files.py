@@ -2,11 +2,6 @@ import enum
 from db import db
 
 
-class FileEnum(enum.Enum):
-    directory = 1
-    file = 2
-
-
 class FileModel(db.Model):
 
     __tablename__ = 'objects'
@@ -19,14 +14,12 @@ class FileModel(db.Model):
     size = db.Column(db.Float, nullable=False, default=0.0)
     location = db.Column(db.String, nullable=False, default='.')
 
-    type_ = db.Column(db.Enum(FileEnum),default=FileEnum.file)
     description = db.Column(db.String, default='')
-    filetype = db.Column(db.String, default='None')
     owner_email = db.Column(db.String, db.ForeignKey('users.email'))
 
     def __init__(self,name,owner_email,
                  description='',location='.',
-                 _type=FileEnum.file, _size=0.0, filetype='None'):
+                 _size=0.0, filetype='None'):
 
         self.name = name
         self.owner_email = owner_email
