@@ -4,7 +4,7 @@ from db import db
 
 class FileModel(db.Model):
 
-    __tablename__ = 'objects'
+    __tablename__ = 'files'
 
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -15,14 +15,14 @@ class FileModel(db.Model):
     location = db.Column(db.String, nullable=False, default='.')
 
     description = db.Column(db.String, default='')
-    owner_email = db.Column(db.String, db.ForeignKey('users.email'))
+    owner_id = db.Column(db.Text, db.ForeignKey('users.id'))
 
     def __init__(self,name,owner_email,
                  description='',location='.',
                  _size=0.0, filetype='None'):
 
         self.name = name
-        self.owner_email = owner_email
+        self.owner_id = owner_email
         self.description = description
         self.location = location
         self.type_ = _type

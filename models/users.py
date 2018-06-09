@@ -1,23 +1,35 @@
 from db import db
-
+import uuid
+import os
+from werkzeug import secure_filename
 
 class UserModel(db.Model):
 
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Text, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
     verified = db.Column(db.Boolean, nullable=False, default=False)
     size_used = db.Column(db.Float, default=0.0)
+    size_limit = db.Column(db.Float,default=500000)
     files = db.relationship('FileModel', lazy='dynamic')
+    location = db.Column(db.Text, nullable=False)
+
 
     def __init__(self, email, password):
 
+        self.id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
         self.email = email
         self.password = password
+        self.location = 'storage/{}'.format(secure_filename(self.id))
+
+        try:
+            os.makedirs(self.location)
+        except:
+            pass
 
     def save_to_db(self):
 
