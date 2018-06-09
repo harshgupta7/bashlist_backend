@@ -28,14 +28,14 @@ class UserRegister(Resource):
 
 	############ FOR TESTING PURPOSES ONLY ##############
 
-	@jwt_required()
-	def get(self):
+	# @jwt_required()
+	# def get(self):
 
-		# pub_key = PubKeyModel('dsdsdsd','harsh')
-		# pub_key.save_to_db()
-		print(current_identity.email)
-		file = FileModel('adsadassas','harsh')
-		file.save_to_db()
-		return {'message':'works'}
+	# 	# pub_key = PubKeyModel('dsdsdsd','harsh')
+	# 	# pub_key.save_to_db()
+	# 	print(current_identity.email)
+	# 	file = FileModel('adsadassas','harsh')
+	# 	file.save_to_db()
+	# 	return {'message':'works'}
 
 	#####################################################

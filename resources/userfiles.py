@@ -1,8 +1,13 @@
 from flask_jwt import current_identity
 from flask_jwt import jwt_required
 from flask_restful import Resource
+from flask import request
 from flask_restful import reqparse
 from models.users import UserModel
+from models.files import FileModel
+from werkzeug import secure_filename
+import os
+from flask import send_file
 
 
 class ListFiles(Resource):
@@ -21,7 +26,45 @@ class ListFiles(Resource):
 
 
 
-# class SyncUp(Resource):
+class File(Resource):
 
-# 	@jwt_required
-# 	
+	parser = reqparse.RequestParser()
+	parser.add_argument('description', type=str, required=False)
+
+	@jwt_required()
+	def post(self,name):
+
+		parser = reqparse.RequestParser()
+		data = File.parser.parse_args()
+		if 'description' in data.keys():
+			desc = data['description']
+		else:
+			desc = ''
+
+		file = request.files['file']
+		filename = file.filename
+		saved_as = secure_filename(filename)
+		path = '{}/{}'.format(current_identity.location,saved_as)
+		file.save(path)
+		size = os.path.getsize(path)
+
+		record =  FileModel(filename,saved_as,current_identity.id,desc,size) 
+		record.save_to_db()
+		return "SUCCESS"
+
+	@jwt_required()
+	def get(self,name):
+		
+		if name not in current_identity.get_all_file_names()['files']:
+			return "FAILURE"
+		else:
+			loc = current_identity.location
+			file = FileModel.find_by_owner_name(current_identity.id,name)
+			path = '{}/{}'.format(loc,file.saved_as)
+			send_file(path,as_attachment=False,attachment_filename=name)
+			return "PASS"
+
+	@jwt_required()
+	def delete(self,name):
+		pass 
+

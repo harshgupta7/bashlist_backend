@@ -17,22 +17,20 @@ class FileModel(db.Model):
 
     description = db.Column(db.String, default='')
     owner_id = db.Column(db.Text, db.ForeignKey('users.id'))
-    filetype = db.Column(db.String,nullable=True)
 
     deleted = db.Column(db.Boolean,default=True)
     deleted_at = db.Column(db.DateTime,nullable=True)
 
-    def __init__(self,name,owner_id,
+    def __init__(self,name,saved_as,owner_id,
                  description='',
                  _size=0.0, filetype='None'):
 
-        self.id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
+        self.id = str(uuid.uuid3(uuid.NAMESPACE_DNS, '{}{}'.format(owner_id,name)))
         self.name = name
-        self.saved_as = secure_filename(self.name)
+        self.saved_as = saved_as
         self.owner_id = owner_id
         self.description = description
         self.size = _size
-        self.filetype = filetype
 
     def save_to_db(self):
         db.session.add(self)
@@ -48,7 +46,11 @@ class FileModel(db.Model):
 
 
     @staticmethod
-    def find_by_owner(owner_email):
+    def find_by_owner(owner_id):
         return FileModel.query.filter_by(owner_id=owner_id).all()
+
+    @staticmethod
+    def find_by_owner_name(owner_id,name):
+        return FileModel.query.filter_by(owner_id=owner_id,name=name).first()
 
 
