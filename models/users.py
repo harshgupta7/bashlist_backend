@@ -41,6 +41,16 @@ class UserModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def get_location(self):
+        return self.location
+
+    def get_size_used(self):
+        return self.size_used
+
+    def get_size_limit(self):
+        return self.size_limit
+        
+
     def is_verified(self):
 
         return self.verified
