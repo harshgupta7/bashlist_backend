@@ -43,21 +43,29 @@ class FileUpload(Resource):
 
 		file = request.files['file']
 		filename = file.filename
+
 		saved_as = secure_filename(filename)
 		path = '{}/{}'.format(current_identity.location,saved_as)
 		file.save(path)
 		size = os.path.getsize(path)
 
-		record =  FileModel(filename,saved_as,current_identity.id,desc,size) 
-		record.save_to_db()
-		return {'BLCODE':"LMV23"}
+		if filename not in current_identity.get_all_file_names()['files']:
+			record =  FileModel(filename,saved_as,current_identity.id,desc,size) 
+			record.save_to_db()
+			return {'BLCODE':"LMV23"}
+		else:
+			record = FileModel.find_by_owner_name(current_identity.id,filename)
+			record.size = size
+			record.save_to_db()
+			return {'BLCODE':"LMV23"}
+
 
 class FileGet(Resource):
 	@jwt_required()
 	def get(self,name):
 
 		if name not in current_identity.get_all_file_names()['files']:
-			return "FAILURE"
+			return {'BLCODE':'NE235'}
 		else:
 			loc = current_identity.location
 			file = FileModel.find_by_owner_name(current_identity.id,name)

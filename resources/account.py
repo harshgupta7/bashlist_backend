@@ -7,9 +7,7 @@ class AccountPath(Resource):
 
 	@jwt_required()
 	def get(self):
-
 		''' Returns URL to open for account'''
-
 		return(AccountPath.url_from_user(current_identity))
 
 	@staticmethod
