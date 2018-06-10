@@ -1,12 +1,12 @@
+import os
+from flask import request
 from flask_jwt import current_identity
 from flask_jwt import jwt_required
 from flask_restful import Resource
-from flask import request
 from flask_restful import reqparse
 from models.users import UserModel
 from models.files import FileModel
 from werkzeug import secure_filename
-import os
 from flask import send_file
 
 
@@ -15,7 +15,7 @@ class ListFiles(Resource):
 	@jwt_required()
 	def get(self):
 
-		'''Method to return array representation of all files of user making request'''
+		'''Method to return JSON representation of all objects in user's storage '''
 
 		return current_identity.list_all_files()
 
@@ -27,6 +27,9 @@ class FileUpload(Resource):
 	
 	@jwt_required()
 	def post(self):
+
+		'''Method to Upload A File'''
+
 		description = str(request.headers.get('Description'))
 		file = request.files['file']
 		filename = file.filename
@@ -58,6 +61,7 @@ class FileUpload(Resource):
 class FileGet(Resource):
 	@jwt_required()
 	def get(self,name):
+		'''Method to download a file'''
 
 		if name not in current_identity.get_all_file_names()['files']:
 			return {'BLCODE':'NE235'}
@@ -69,16 +73,9 @@ class FileGet(Resource):
 
 	@jwt_required()
 	def delete(self,name):
+		'''Method to delete a file'''
+		#TODO
+
 		pass 
-
-
-class TestUpload(Resource):
-	def post(self):
-		file = request.files['file']
-		filename = file.filename
-		saved_as = secure_filename(filename)
-		path = UserModel.find_by_email("harsh").location
-		file.save('{}/{}'.format(path,saved_as))
-		return {'BLCODE':"SUCCESS"}
 
 

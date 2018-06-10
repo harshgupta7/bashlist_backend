@@ -1,22 +1,23 @@
-
-from models.mailfiles import MailShares
-from models.files import FileModel
-from models.users import UserModel
+import uuid
+import os
+import random
+import sendgrid
+from flask import send_file
+from flask_jwt import current_identity
 from flask_restful import Resource
 from flask_restful import reqparse
 from flask_jwt import jwt_required 
-from flask_jwt import current_identity
-import uuid
+from models.mailfiles import MailShares
+from models.files import FileModel
+from models.users import UserModel
 from url import URL
-from flask import send_file
-# from flask_sendgrid import SendGrid
-import random
+from sendgrid.helpers.mail import Content,Email,Mail
 
-import sendgrid
-import os
-from sendgrid.helpers.mail import *
+
 
 sg = sendgrid.SendGridAPIClient(apikey='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')
+
+
 
 class SendMailWithFile(Resource):
 
@@ -81,6 +82,5 @@ class DownloadMailedFile(Resource):
 			return send_file(loc,as_attachment=True,attachment_filename=file.name)
 		else:
 			render_template('404.html')
-# ------------------------------------------------------------------------
 
 

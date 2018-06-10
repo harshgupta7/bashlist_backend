@@ -1,6 +1,6 @@
-from db import db
 import uuid
 import os
+from db import db
 from werkzeug import secure_filename
 
 class UserModel(db.Model):

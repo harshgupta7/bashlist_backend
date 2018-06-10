@@ -1,6 +1,6 @@
 import uuid
-from db import db
 import random
+from db import db
 
 class MailShares(db.Model):
 

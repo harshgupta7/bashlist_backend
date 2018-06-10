@@ -1,8 +1,7 @@
-import enum
-from db import db
 import uuid
-from werkzeug import secure_filename
+from db import db
 from models.users import UserModel
+from werkzeug import secure_filename
 
 class FileModel(db.Model):
 

@@ -8,6 +8,8 @@ from models.users import UserModel
 
 class UserRegister(Resource):
 
+	'''Method to register a new user'''
+
 	parser = reqparse.RequestParser()
 	parser.add_argument('email',type=str,required=True,help='email is a required field')
 	parser.add_argument('password',type=str,required=True,help='password is a required field')
@@ -29,18 +31,3 @@ class UserRegister(Resource):
 		user.save_to_db()
 		return {'BLCODE':'USD23'}
 
-	
-
-	############ FOR TESTING PURPOSES ONLY ##############
-
-	# @jwt_required()
-	# def get(self):
-
-	# 	# pub_key = PubKeyModel('dsdsdsd','harsh')
-	# 	# pub_key.save_to_db()
-	# 	print(current_identity.email)
-	# 	file = FileModel('adsadassas','harsh')
-	# 	file.save_to_db()
-	# 	return {'message':'works'}
-
-	#####################################################

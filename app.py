@@ -57,12 +57,6 @@ def customized_error_handler(error):
 
 	return jsonify({'BLCODE':val})
 
-# #Only for dev server
-# @app.before_first_request
-# def create_tables():
-# 	db.create_all()
-
-
 
 
 ### ENDPOINTS ______________________________
@@ -74,7 +68,6 @@ api.add_resource(FileUpload,'/filesync')
 api.add_resource(FileGet,'/filedown/<string:name>')
 api.add_resource(SendMailWithFile,'/sendmail')
 api.add_resource(DownloadMailedFile,'/filedownloader/<string:one>/<string:realval>/<string:three>')
-# api.add_resource(FileMailer,'/sendmail1')
 
 
 
@@ -84,7 +77,6 @@ if __name__ == '__main__':
 
 	from db import db 
 	db.init_app(app)
-	#Only for dev server
 	@app.before_first_request
 	def create_tables():
 		db.create_all()
