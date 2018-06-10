@@ -24,19 +24,10 @@ class ListFiles(Resource):
 
 class FileUpload(Resource):
 
-	parser = reqparse.RequestParser()
-	parser.add_argument('description', type=str, required=False)
-
+	
 	@jwt_required()
 	def post(self):
-
-		parser = reqparse.RequestParser()
-		data = FileUpload.parser.parse_args()
-		if 'description' in data.keys():
-			desc = data['description']
-		else:
-			desc = ''
-
+		description = str(request.headers.get('Description'))
 		file = request.files['file']
 		filename = file.filename
 
@@ -45,13 +36,21 @@ class FileUpload(Resource):
 		file.save(path)
 		size = os.path.getsize(path)
 
+
+		if current_identity.size_used + size > current_identity.size_limit:
+			return {'BLCODE':'OVX23'}
+
 		if filename not in current_identity.get_all_file_names()['files']:
-			record =  FileModel(filename,saved_as,current_identity.id,desc,size) 
+			record =  FileModel(filename,saved_as,current_identity.id,description,size) 
 			record.save_to_db()
+			user = current_identity
+			user.size_used = user.size_used + size 
+			user.save_to_db()
 			return {'BLCODE':"LMV23"}
 		else:
 			record = FileModel.find_by_owner_name(current_identity.id,filename)
 			record.size = size
+			record.description = description
 			record.save_to_db()
 			return {'BLCODE':"LMV23"}
 
@@ -67,7 +66,6 @@ class FileGet(Resource):
 			file = FileModel.find_by_owner_name(current_identity.id,name)
 			path = '{}/{}'.format(loc,file.saved_as)
 			return send_file(path,as_attachment=False,attachment_filename=name)
-			# return "PASS"
 
 	@jwt_required()
 	def delete(self,name):

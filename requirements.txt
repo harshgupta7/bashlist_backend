@@ -1,0 +1,7 @@
+FLask
+Flask-RESTful
+Flask-SQLAlchemy
+uwsgi
+psycopg2
+sendgrid
+Flask-JWT==0.3.2

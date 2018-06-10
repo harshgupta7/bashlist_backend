@@ -2,6 +2,7 @@ import enum
 from db import db
 import uuid
 from werkzeug import secure_filename
+from models.users import UserModel
 
 class FileModel(db.Model):
 
@@ -18,7 +19,7 @@ class FileModel(db.Model):
     description = db.Column(db.String, default='')
     owner_id = db.Column(db.Text, db.ForeignKey('users.id'))
 
-    deleted = db.Column(db.Boolean,default=True)
+    deleted = db.Column(db.Boolean,default=False)
     deleted_at = db.Column(db.DateTime,nullable=True)
 
     def __init__(self,name,saved_as,owner_id,
@@ -52,12 +53,24 @@ class FileModel(db.Model):
         "Description":self.description
         }
 
+    def find_location(self):
+        if self.deleted:
+            return None
+        owner = UserModel.find_by_id(self.owner_id)
+        loc = owner.location 
+        file_loc = '{}/{}'.format(loc,self.saved_as)
+        return file_loc
+
+    @staticmethod
+    def find_by_id(_id):
+        return FileModel.query.filter_by(id=_id,deleted=False).first()
+
     @staticmethod
     def find_by_owner(owner_id):
-        return FileModel.query.filter_by(owner_id=owner_id).all()
+        return FileModel.query.filter_by(owner_id=owner_id,deleted=False).all()
 
     @staticmethod
     def find_by_owner_name(owner_id,name):
-        return FileModel.query.filter_by(owner_id=owner_id,name=name).first()
+        return FileModel.query.filter_by(owner_id=owner_id,name=name,deleted=False).first()
 
 

@@ -61,9 +61,6 @@ class UserModel(db.Model):
             'files': [file_.name for file_ in self.files.all()]
         }
     def list_all_files(self):
-        # return{
-        #     'Files':[file_.array_repr() for file_ in self.files.all()]
-        # }
 
         i = 1
         ret = {}
