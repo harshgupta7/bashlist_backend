@@ -12,10 +12,15 @@ class UserRegister(Resource):
 	parser.add_argument('email',type=str,required=True,help='email is a required field')
 	parser.add_argument('password',type=str,required=True,help='password is a required field')
 
+	@jwt_required
 	def post(self):
+		
+		if current_identity.email!='harsh':
+			return
 		
 		parser = reqparse.RequestParser()
 		data = UserRegister.parser.parse_args()
+
 
 		if UserModel.find_by_email(data['email']):
 			return {'BLCODE':'X2ISD'}

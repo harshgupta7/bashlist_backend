@@ -44,6 +44,13 @@ class FileModel(db.Model):
 
         return [self.name,self.size,str(self.updated_on),self.description]
 
+    def dict_repr(self):
+        return {
+        "Name":self.name,
+        "Size":self.size,
+        "Updated_On": str(self.updated_on),
+        "Description":self.description
+        }
 
     @staticmethod
     def find_by_owner(owner_id):

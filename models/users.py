@@ -61,9 +61,17 @@ class UserModel(db.Model):
             'files': [file_.name for file_ in self.files.all()]
         }
     def list_all_files(self):
-        return{
-            'files':[file_.array_repr() for file_ in self.files.all()]
-        }
+        # return{
+        #     'Files':[file_.array_repr() for file_ in self.files.all()]
+        # }
+
+        i = 1
+        ret = {}
+        for file in self.files.all():
+            val = 'file{}'.format(i)
+            ret[val] = file.dict_repr()
+            i+=1
+        return ret
 
     @staticmethod
     def find_by_email(email):

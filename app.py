@@ -65,7 +65,6 @@ api.add_resource(UserRegister,'/register')
 api.add_resource(AccountPath,'/account')
 api.add_resource(ListFiles,'/getallfiles')
 api.add_resource(FileUpload,'/filesync')
-# api.add_resource(TestUpload,'/TestUpload')
 api.add_resource(FileGet,'/filedown/<string:name>')
 
 

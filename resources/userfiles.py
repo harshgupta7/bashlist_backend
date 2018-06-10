@@ -17,11 +17,7 @@ class ListFiles(Resource):
 
 		'''Method to return array representation of all files of user making request'''
 
-		user = UserModel.find_by_email(current_identity.email)
-		if not user:
-			return {'BLCODE':'XEF23'}
-
-		return user.list_all_files()
+		return current_identity.list_all_files()
 
 
 

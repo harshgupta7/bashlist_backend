@@ -15,4 +15,4 @@ class AccountPath(Resource):
 
 		'''Maps user to their account URL'''
 
-		return 'www.google.com'
+		return {'URL':'www.google.com'}
