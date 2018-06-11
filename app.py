@@ -9,7 +9,7 @@ from flask_restful import Api
 from resources.register import UserRegister
 from resources.account import AccountPath
 from resources.mailer import SendMailWithFile,DownloadMailedFile
-from resources.userfiles import ListFiles,FileUpload,FileGet,TestUpload
+from resources.userfiles import ListFiles,FileUpload,FileGet
 from security import authenticate,identity
 
 
