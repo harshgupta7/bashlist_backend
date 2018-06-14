@@ -81,7 +81,7 @@ class ActivityLog(models.Model):
 	bucket = models.ForeignKey(Bucket,null=False,editable=False,on_delete=models.CASCADE)
 	action = models.CharField(max_length=2, choices=ACTIVITY_TYPES)
 
-class IndividualEncryptionKeys(models.Model):
+class IndividualEncryptionKey(models.Model):
 	id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
@@ -89,7 +89,7 @@ class IndividualEncryptionKeys(models.Model):
 	owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
 
-class SharedEncryptionKeyModel(models.Model):
+class SharedEncryptionKey(models.Model):
 	id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
