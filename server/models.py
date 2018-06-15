@@ -22,7 +22,7 @@ class Bucket(models.Model):
 	owner = models.ForeignKey(User,on_delete=models.CASCADE)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
-	encrypted_with = models.ForeignKey('IndividualEncryptionKeys',null=True,on_delete=models.SET_NULL)
+	encrypted_with = models.ForeignKey('IndividualEncryptionKey',null=True,on_delete=models.SET_NULL)
 	name = models.CharField(max_length=255,null=False,blank=False)
 	saved_as = models.CharField(max_length=255,null=False,blank=False)
 	size = models.IntegerField(blank=False,null=False,default=0)
@@ -59,7 +59,7 @@ class ShareBucket(models.Model):
 	receiver = models.EmailField(max_length=255,blank=False,null=False,editable=False)
 	bucket_exists = models.BooleanField(default=True)
 	encrypted = models.BooleanField(default=False)
-	encrypted_with = models.ForeignKey('SharedEncryptionKeyModel',null=True,on_delete=models.SET_NULL)
+	encrypted_with = models.ForeignKey('SharedEncryptionKey',null=True,on_delete=models.SET_NULL)
 	downloaded = models.BooleanField(default=False)
 	downloaded_at = models.DateTimeField(null=True)
 
