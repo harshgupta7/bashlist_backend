@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 
+
 class User(AbstractBaseUser):
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
@@ -16,13 +17,13 @@ class User(AbstractBaseUser):
 	s3_bucket_key = models.CharField(max_length=255,null=False,unique=True)
 	
 	USERNAME_FIELD = 'email'
-	
 
-	
+
+
 class Bucket(models.Model):
 
 	id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
-	owner = models.ForeignKey(User,on_delete=models.CASCADE)
+	owner = models.ForeignKey('User',on_delete=models.CASCADE)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 	encrypted_with = models.ForeignKey('IndividualEncryptionKey',null=True,on_delete=models.SET_NULL)
@@ -34,6 +35,7 @@ class Bucket(models.Model):
 	s3_bucket_key = models.CharField(max_length=255,null=False,unique=True)
 	deleted = models.BooleanField(default=False)
 	deleted_at = models.DateTimeField(null=True)
+
 
 
 class EmailBucket(models.Model):
