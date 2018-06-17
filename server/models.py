@@ -1,4 +1,5 @@
 import uuid
+from Crypto.PublicKey import RSA
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -41,19 +42,23 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-	password = models.CharField(max_length=128,null=False,blank=False) 
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 	email = models.EmailField(max_length=255,blank=False,unique=True,null=False)
 	verified = models.BooleanField(default=False,blank=False)
-	pub_key = models.TextField(max_length=1024,blank=False,unique=True,null=True)
+	encrypted_pub_key = models.TextField(max_length=2048,blank=False,unique=True,null=True)
+	encrypted_priv_key = models.TextField(max_length=2048,blank=False,unique=True,null=True)
 	size_used = models.IntegerField(default=0)
 	size_limit = models.IntegerField(default=500000, blank=False,null=False)
 	s3_bucket = models.CharField(max_length=255,default='central')
 	s3_bucket_key = models.CharField(max_length=255,null=False,unique=True)
 	objects = UserManager()
-	
+
 	USERNAME_FIELD = 'email'
+
+	
+
+	
   
 
 class Bucket(models.Model):
