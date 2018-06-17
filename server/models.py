@@ -12,12 +12,12 @@ from server.utils import user_util_generate_encrypted_key_pair
 from django.conf import settings
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, password):
         """
         Creates and saves a User with the given email and password.
         """
-        if not email:
-            raise ValueError('Users must have an email address')
+        if not email or not password:
+            raise ValueError('Users must have an email address & password')
 
         user = self.model(
             email=self.normalize_email(email),
