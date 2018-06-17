@@ -18,7 +18,11 @@ from django.urls import path
 from django.conf.urls import url
 from server.resources import UserRegister
 from django.views.decorators.csrf import csrf_exempt
+from django.conf.urls import handler404, handler500
 
+
+handler404 = 'server.views.handle_error'
+handler500 = 'server.views.handle_error'
 
 
 urlpatterns = [
