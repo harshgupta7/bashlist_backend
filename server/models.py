@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import hashlib
 from rest_framework.authtoken.models import Token
 from server.utils import user_util_generate_file_encryption_key
 from server.utils import user_util_generate_encrypted_key_pair
@@ -28,7 +29,7 @@ class UserManager(BaseUserManager):
         user.encrypted_priv_key = priv_key
 
         user.s3_bucket_key = user.id
-        user.set_password(password)
+        user.set_password(hashlib.sha256(password.encode()).hexdigest())
         user.save(using=self._db)
         return user
 
