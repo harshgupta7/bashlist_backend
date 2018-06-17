@@ -6,6 +6,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from server.utils import user_util_generate_file_encryption_key
+from server.utils import user_util_generate_encrypted_key_pair
 from django.conf import settings
 
 class UserManager(BaseUserManager):
@@ -19,6 +21,12 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
         )
+        pub_key,priv_key = user_util_generate_encrypted_key_pair(password)
+        file_encryption_key = user_util_generate_file_encryption_key(password)
+        user.encrypted_file_encryption_key = file_encryption_key
+        user.pub_key = pub_key
+        user.encrypted_priv_key = priv_key
+
         user.s3_bucket_key = user.id
         user.set_password(password)
         user.save(using=self._db)
@@ -46,8 +54,10 @@ class User(AbstractBaseUser):
 	updated_at = models.DateTimeField(auto_now=True)
 	email = models.EmailField(max_length=255,blank=False,unique=True,null=False)
 	verified = models.BooleanField(default=False,blank=False)
-	encrypted_pub_key = models.TextField(max_length=2048,blank=False,unique=True,null=True)
-	encrypted_priv_key = models.TextField(max_length=2048,blank=False,unique=True,null=True)
+	encrypted_file_encryption_key = models.TextField(max_length=2048,null=True)
+	pub_key = models.TextField(max_length=4096,blank=False,unique=True,null=True)
+	encrypted_priv_key = models.TextField(max_length=4096,blank=False,unique=True,null=True)
+	pub_key = models.TextField(max_length=1024,blank=False,unique=True,null=False)
 	real_size_used = models.IntegerField(default=0, blank=False,null=False)
 	virtual_size_used = models.IntegerField(default=0, blank=False,null=False)
 	virtual_size_limit = models.IntegerField(default=1000000, blank=False,null=False)
@@ -68,7 +78,6 @@ class Bucket(models.Model):
 	owner = models.ForeignKey('User',on_delete=models.CASCADE)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
-	encrypted_with = models.ForeignKey('IndividualEncryptionKey',null=True,on_delete=models.SET_NULL)
 	name = models.CharField(max_length=255,null=False,blank=False)
 	saved_as = models.CharField(max_length=255,null=False,blank=False)
 	size = models.IntegerField(blank=False,null=False,default=0)
@@ -127,13 +136,6 @@ class ActivityLog(models.Model):
 	user = models.ForeignKey(User,null=False,editable=False,on_delete=models.CASCADE)
 	bucket = models.ForeignKey(Bucket,null=False,editable=False,on_delete=models.CASCADE)
 	action = models.CharField(max_length=2, choices=ACTIVITY_TYPES)
-
-class IndividualEncryptionKey(models.Model):
-	id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
-	encrypted_key = models.TextField(null=False)
-	owner = models.ForeignKey(User,on_delete=models.CASCADE)
 
 
 class SharedEncryptionKey(models.Model):
