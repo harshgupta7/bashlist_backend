@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_AUTHENTICATION_CLASSES': ['server.authentication.SimpleAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': []
 }
 
