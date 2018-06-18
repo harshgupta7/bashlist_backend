@@ -56,9 +56,8 @@ class User(AbstractBaseUser):
 	email = models.EmailField(max_length=255,blank=False,unique=True,null=False)
 	verified = models.BooleanField(default=False,blank=False)
 	encrypted_file_encryption_key = models.TextField(max_length=2048,null=True)
-	pub_key = models.TextField(max_length=4096,blank=False,unique=True,null=True)
 	encrypted_priv_key = models.TextField(max_length=4096,blank=False,unique=True,null=True)
-	pub_key = models.TextField(max_length=1024,blank=False,unique=True,null=False)
+	pub_key = models.TextField(max_length=4096,blank=False,unique=True,null=False)
 	real_size_used = models.IntegerField(default=0, blank=False,null=False)
 	virtual_size_used = models.IntegerField(default=0, blank=False,null=False)
 	virtual_size_limit = models.IntegerField(default=1000000, blank=False,null=False)
@@ -68,10 +67,15 @@ class User(AbstractBaseUser):
 
 	USERNAME_FIELD = 'email'
 
-	
+	def generate_account_url(self):
+		return "https://www.google.com"
 
-	
-  
+	def generate_s3_pull_url(self,bucket_saved_as):
+		return "https://www.google.com"
+
+	def generate_s3_push_url(self):
+		return "https://www.google.com"
+
 
 class Bucket(models.Model):
 
@@ -88,6 +92,8 @@ class Bucket(models.Model):
 	deleted = models.BooleanField(default=False)
 	deleted_at = models.DateTimeField(null=True)
 
+	def json_representation(self):
+		return {'Name':self.name,'Size':self.size,'Updated':self.updated_at,'Description':self.description}
 
 
 class EmailBucket(models.Model):
