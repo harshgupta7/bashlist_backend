@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
+from server.resources import UserRegister
+from django.views.decorators.csrf import csrf_exempt
+from django.conf.urls import handler404, handler500
+
+
+handler404 = 'server.views.handle_error'
+handler500 = 'server.views.handle_error'
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('register',csrf_exempt(UserRegister.as_view()))
 ]

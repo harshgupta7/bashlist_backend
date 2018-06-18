@@ -25,7 +25,9 @@ SECRET_KEY = 'h-_nyt*982)39e=3k=zggn7sd16l_&!2qvuj((v!_&l0p%y1u$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+AUTH_USER_MODEL = 'server.User'
 
 
 # Application definition
@@ -37,8 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'server'
+    'server',
+    'rest_framework',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['server.authentication.SimpleAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': []
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
