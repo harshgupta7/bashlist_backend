@@ -15,8 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.conf.urls import url
-from server.resources import UserRegister
+from server.resources import UserRegister,TestAuth
 from django.views.decorators.csrf import csrf_exempt
 from django.conf.urls import handler404, handler500
 
@@ -27,5 +26,6 @@ handler500 = 'server.views.handle_error'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register',csrf_exempt(UserRegister.as_view()))
+    path('register',csrf_exempt(UserRegister.as_view())),
+    path('api/v01/checkcredentials',csrf_exempt(TestAuth.as_view()))
 ]
