@@ -3,3 +3,4 @@
 423 - insufficient space to store file size
 424 - insufficient space to store files for bucket owner
 399 - unexpected error
+225 - upload success

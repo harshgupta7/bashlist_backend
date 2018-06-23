@@ -7,7 +7,7 @@ from rest_framework import status
 from server.models import User,Bucket,ActivityLog,SharedEncryptionKey
 from server.s3 import generate_s3_pull_url,generate_s3_push_url
 from werkzeug import secure_filename
-from server.s3 import generate_s3_pull_url,generate_s3_push_url
+from server.s3 import generate_s3_pull_url,generate_s3_push_url,get_directory_data
 
 class UserRegister(APIView):
 
@@ -177,14 +177,39 @@ class RequestPushBucketURL(APIView):
 		except:
 			Response({'Error':'Y'},399)
 
+class PushBucketConfirmation(APIView):
 
+	permission_classes = (IsAuthenticated,)
+	authentication_classes = (SimpleAuthentication,)
 
+	def post(self):
+		email = request.META.get('HTTP_EMAIL')
+		name = request.data.get('Name')
+		shared = request.data.get('Shared')
+		try:
+			description = request.data.get('HTTP_BLDESC')
+		except:
+			pass
+		if shared=='Y':
+			bucket = bucket.objects.get(is_shared=True,shared_with=user,name=name,available=True,deleted=False)
+		else:
+			bucket = Bucket.objects.get(owner=user,name=name,deleted=False)
 
+		size = get_directory_data(bucket.saved_as)
+		if not size:
+			return Response({'Error':'Y'},399)
+		
+		bucket.size_on_s3 = size
+		bucket.available = True
+		bucket.save()
+		return Response({'Error':'N'},225)
 
 class ShareBucketRequest(APIView):
 	pass 
 
 
+class DeleteBucketRequest(APIView):
+	pass
 
 class TestAuth(APIView):
 	permission_classes = (IsAuthenticated,)

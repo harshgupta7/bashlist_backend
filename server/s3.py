@@ -33,7 +33,12 @@ def generate_s3_push_url(s3_bucket_key,size_limit,s3_bucket_name='bashlist-7'):
 	)
 	return post
 
-def get_directory_data(s3_bucket_name,s3_directory_key):
-	return "https://www.google.com"
+def get_directory_data(s3_key,s3_bucket_name='bashlist-7'):
+	try:
+		object_summary = s3.ObjectSummary(s3_bucket_name,s3_key)
+		return object_summary.size
+	except:
+		return None
+
 
 
