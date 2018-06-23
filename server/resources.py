@@ -85,6 +85,7 @@ class RequestPullBucketURL(APIView):
 		email = request.META.get('HTTP_EMAIL')
 		user = User.objects.get(email=email)
 
+		#case 1: bucket is owned by user
 		try:
 			bucket = Bucket.objects.get(name=bucket_name,owner=user,deleted=False,available=True)
 			decryption_key = user.encrypted_file_encryption_key
@@ -97,6 +98,7 @@ class RequestPullBucketURL(APIView):
 		except Bucket.DoesNotExist:
 			pass 
 
+		#case 2: bucket is shared with user.
 		try:
 			bucket = Bucket.objects.get(is_shared=True,available=True,deleted=False,name=bucket_name,shared_with=user)
 			url = user.generate_s3_pull_url(bucket)
@@ -201,6 +203,10 @@ class PushBucketConfirmation(APIView):
 		
 		bucket.size_on_s3 = size
 		bucket.available = True
+		log = ActivityLog(user=user,bucket=bucket,action='Up')
+		log.save()
+		if description:
+			bucket.description = description
 		bucket.save()
 		return Response({'Error':'N'},225)
 
