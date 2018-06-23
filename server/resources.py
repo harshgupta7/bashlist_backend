@@ -44,10 +44,13 @@ class GetList(APIView):
 		
 		try:
 			buckets = Bucket.objects.filter(owner=user,deleted=False)
+			if len(buckets)==0:
+				return Response({"Empty":"T"})
 			return_arr = [bucket.json_representation() for bucket in buckets]
-			return Response({"Data":return_arr},200)
-		except:
-			return Response({"Error_message":"No Buckets Found"})
+			return Response({"Data":return_arr,"Empty":"F"})
+		except Exception as e:
+			print(e)
+			return Response({"Error":"Y"},399)
 
 
 class GetAccountURL(APIView):
@@ -58,7 +61,7 @@ class GetAccountURL(APIView):
 
 		email = request.META.get('HTTP_EMAIL')
 		user = User.objects.get(email=email)
-		url = user.get_account_url()
+		url = user.generate_account_url()
 		return Response({'Url':url})
 
 
@@ -89,7 +92,8 @@ class RequestPullBucketURL(APIView):
 		try:
 			bucket = Bucket.objects.get(name=bucket_name,owner=user,deleted=False,available=True)
 			decryption_key = user.encrypted_file_encryption_key
-			url = user.generate_s3_pull_url(bucket)
+			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
+			url = user.generate_s3_pull_url(s3_bucket_key)
 			#TODO:put in celery
 			log = ActivityLog(user=user,bucket=bucket,action='Do')
 			log.save()
@@ -101,7 +105,9 @@ class RequestPullBucketURL(APIView):
 		#case 2: bucket is shared with user.
 		try:
 			bucket = Bucket.objects.get(is_shared=True,available=True,deleted=False,name=bucket_name,shared_with=user)
-			url = user.generate_s3_pull_url(bucket)
+			owner = bucket.owner
+			s3_bucket_key = '{}__{}'.format(owner.id,bucket.saved_as)
+			url = user.generate_s3_pull_url(s3_bucket_key)
 			encryption_key = SharedEncryptionKey.objects.filter(key_owner=user,bucket=bucket)
 			encrypted_priv_key = user.encrypted_priv_key
 			#TODO:put in celery
@@ -138,7 +144,8 @@ class RequestPushBucketURL(APIView):
 			user.virtual_size_used+=size
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
-			url = generate_s3_push_url(bucket.saved_as,size_limit=size)
+			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
+			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
 			return Response({'Error':'N','Exist':'Y','Shared':'N','Key':file_encryption_key,'URL':url})
 		except Bucket.DoesNotExist:
 			pass
@@ -152,7 +159,8 @@ class RequestPushBucketURL(APIView):
 					return Response({'Error':'Y'},423)
 				else:
 					return Response({'Error':'Y'},424)
-			url = generate_s3_push_url(bucket.saved_as,size_limit=size)
+			s3_bucket_key = '{}__{}'.format(bucket_owner.id,bucket.saved_as)
+			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
 			bucket_owner.virtual_size_used+=size
 			bucket_owner.save()
 			try:
@@ -174,7 +182,8 @@ class RequestPushBucketURL(APIView):
 			user.virtual_size_used+=size
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
-			url = generate_s3_push_url(bucket.saved_as,size_limit=size)
+			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
+			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
 			return Response({'Error':'N','Exist':'N','Shared':'N','Key':file_encryption_key,'URL':url}) 
 		except:
 			Response({'Error':'Y'},399)

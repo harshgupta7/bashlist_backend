@@ -34,8 +34,24 @@ class Bucket(models.Model):
 	deleted_at = models.DateTimeField(null=True)
 
 	def json_representation(self):
-		return {'Name':self.name,'Size':self.size,'Updated':self.updated_at,'Description':self.description,'Shared':self.is_shared}
+		if self.is_shared:
+			s = "Shared"
+		else:
+			s = "Private"
+		if self.encrypted:
+			e = "Encrypted"
+		else:
+			e = "Server Encryption"
 
+		r = '{}/{}'.format(s,e)
+
+		return {
+			'Name':self.name,
+			'Size':self.size,
+			'Updated':self.updated_at,
+			'Description':self.description,
+			'Status':r
+		}
 
 class ActivityLog(models.Model):
 
