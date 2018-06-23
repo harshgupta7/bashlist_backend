@@ -7,6 +7,7 @@ from rest_framework import status
 from server.models import User,Bucket,ActivityLog,SharedEncryptionKey
 from server.s3 import generate_s3_pull_url,generate_s3_push_url
 from werkzeug import secure_filename
+from server.s3 import generate_s3_pull_url,generate_s3_push_url
 
 class UserRegister(APIView):
 
@@ -111,80 +112,70 @@ class RequestPullBucketURL(APIView):
 			return Response({'Error_message':"No Buckets Found"},667)			
 
 
-# class RequestPushBucketURL(APIView):
-	
 
-# 	permission_classes = (IsAuthenticated,)
-# 	authentication_classes = (SimpleAuthentication,)
+class RequestPushBucketURL(APIView):
 
-# 	def post(self,request,bucket_name,size,format='json'):
+	permission_classes = (IsAuthenticated,)
+	authentication_classes = (SimpleAuthentication,)
 
-# 		email = request.META.get('HTTP_EMAIL')
-# 		size = request.data['Size']
-# 		size = abs(size)
-# 		bucket_name = request.data['Name']
-# 		description = request.data['Description']
-# 		user = User.objects.get(email=email)
+	def post(self):
 
-# 		try:
-# 			bucket = Bucket.objects.get(is_shared=True,available=True,deleted=False,name=bucket_name,shared_with=user)
-			
+		email = request.META.get('HTTP_EMAIL')
+		size = request.data['Size']
+		size = abs(size)
+		bucket_name = request.data['Name']
+		user = User.objects.get(email=email)
 
-# 		bucket = Bucket.objects.filter(name=bucket_name,owner=user,deleted=False)
-# 		if len(bucket)==1:
-# 			if (size-bucket.size+user.virtual_size_used>user.virtual_size_limit):
-# 				return Response({'Error_message':'Insufficient Space'},423)
-# 			else:
-# 				bucket.size = size
-# 				bucket.description = description
-# 				bucket.save()
-# 				url = generate_s3_push_url(user,bucket.saved_as,size)
-# 				encryption_key = user.encrypted_bucket_encryption_key
-# 				return Response({'url':url,'key':encryption_key,'shared':'F'})
-# 		else:
+		# Case 1: Bucket is private, and is owned by user.
+		try:
+			bucket = Bucket.objects.get(name=bucket_name,owner=user,available=True,deleted=False,is_shared=False)
+			if size+user.virtual_size_used-bucket.size>user.virtual_size_limit:
+				return Response({'Error':'Y'},423)
+			bucket.size = size
+			bucket.save()
+			user.virtual_size_used+=size
+			user.save()
+			file_encryption_key = user.encrypted_bucket_encryption_key
+			url = generate_s3_push_url(bucket.saved_as,size_limit=size)
+			return Response({'Error':'N','Exist':'Y','Shared':'N','Key':file_encryption_key,'URL':url})
+		except Bucket.DoesNotExist:
+			pass
 
-# 			url,s3_key = generate_s3_push_url(user,secure_filename(bucket_name),size)
-# 			encryption_key = user.encrypted_bucket_encryption_key
-# 			bucket = Bucket(name=bucket_name,saved_as=secure_filename(bucket_name),available=False,s3_bucket_key=s3_key,description=description)
-# 			bucket.save()
-# 			return Response({'url':url,'shared':'F','key':encryption_key})
+		# Case 2: Bucket is shared and is shared with user.
+		try:
+			bucket = Bucket.objects.get(name=bucket_name,shared_with=user,is_shared=True,deleted=False,available=True)
+			bucket_owner = bucket.owner 
+			if bucket_owner.virtual_size_used - bucket.size + size > bucket_owner.virtual_size_limit:
+				if bucket_owner==user:
+					return Response({'Error':'Y'},423)
+				else:
+					return Response({'Error':'Y'},424)
+			url = generate_s3_push_url(bucket.saved_as,size_limit=size)
+			bucket_owner.virtual_size_used+=size
+			bucket_owner.save()
+			try:
+				key = SharedEncryptionKey.objects.get(bucket=bucket,key_owner=user)
+			except:
+				return Response({'Error':'Y'},399)
+			keyval = key.enrypted_bucket_encryption_key
+			priv_key = user.encrypted_priv_key
+			return Response({'Error':'N','Shared':'Y','Exist':'Y','PrivKey':priv_key,'key':keyval})
+		except Bucket.DoesNotExist:
+			pass
 
-
-
-
-			
-# 		else:
-
-
-
-# 		try:
-# 			bucket = Bucket.objects.get(name=bucket_name,owner=user,deleted=False)
-# 			bucket.size = size 
-# 			bucket.save()
-# 			url = generate_s3_push_url(user,bucket,size)
-# 			if bucket.is_shared:
-
-
-
-# 		if user.virtual_size_used + size > user.virtual_size_limit:
-# 			return Response({'Error_message':'Insufficient Space'},423)
-
-# 		try:
-# 			bucket = Bucket.objects.get(name=bucket_name,owner=user,deleted=False)
-# 			bucket.size = size 
-
-# 		except:
-# 			pass
-
-# 		decryption_key = user.encrypted_file_encryption_key
-		
-# 		#####TODO: put this in celery######
-# 		log = ActivityLog(user=user,bucket=bucket,action='Do')
-# 		log.save()
-# 		###################################
-		
-# 		url = generate_s3_pull_url(user,bucket)
-# 		return Response({'URL':url,'Key':key})
+		# Case 3: New Bucket
+		try:
+			bucket = Bucket(owner=User,name=bucket_name,saved_as=secure_filename(bucket_name),size=size,available=False)
+			bucket.save()
+			if user.virtual_size_used + size > user.virtual_size_limit:
+				return Response({'Error':'Y'},423)
+			user.virtual_size_used+=size
+			user.save()
+			file_encryption_key = user.encrypted_bucket_encryption_key
+			url = generate_s3_push_url(bucket.saved_as,size_limit=size)
+			return Response({'Error':'N','Exist':'N','Shared':'N','Key':file_encryption_key,'URL':url}) 
+		except:
+			Response({'Error':'Y'},399)
 
 
 

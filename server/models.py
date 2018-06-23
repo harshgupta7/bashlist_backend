@@ -20,6 +20,7 @@ class Bucket(models.Model):
 	name = models.CharField(max_length=255,null=False,blank=False)
 	saved_as = models.CharField(max_length=255,null=False,blank=False)
 	size = models.IntegerField(blank=False,null=False,default=0)
+	size_on_s3 = models.IntegerField(null=True)
 	description = models.TextField(max_length=500,null=True)
 	s3_bucket = models.CharField(max_length=255,default='central')
 	s3_bucket_key = models.CharField(max_length=255,null=False,unique=True)
