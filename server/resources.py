@@ -126,13 +126,18 @@ class RequestPushBucketURL(APIView):
 	permission_classes = (IsAuthenticated,)
 	authentication_classes = (SimpleAuthentication,)
 
-	def post(self):
+	def post(self,request,format='json'):
+
+		# return Response({'m':'kk'})
 
 		email = request.META.get('HTTP_EMAIL')
-		size = request.data['Size']
+		print(request.data)
+		# print(request.body)
+		size = int(request.data['Size'])
 		size = abs(size)
 		bucket_name = request.data['Name']
 		user = User.objects.get(email=email)
+		# return Response({'sd':'sds'})
 
 		# Case 1: Bucket is private, and is owned by user.
 		try:
@@ -175,18 +180,20 @@ class RequestPushBucketURL(APIView):
 
 		# Case 3: New Bucket
 		try:
-			bucket = Bucket(owner=User,name=bucket_name,saved_as=secure_filename(bucket_name),size=size,available=False)
+			# s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
+			bucket = Bucket(owner=user,name=bucket_name,saved_as=secure_filename(bucket_name),size=size,available=False)
+			s3_bucket_key = s3_bucket_key='{}__{}'.format(user.s3_bucket_key,secure_filename(bucket_name))
 			bucket.save()
 			if user.virtual_size_used + size > user.virtual_size_limit:
 				return Response({'Error':'Y'},423)
 			user.virtual_size_used+=size
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
-			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
 			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
 			return Response({'Error':'N','Exist':'N','Shared':'N','Key':file_encryption_key,'URL':url}) 
-		except:
-			Response({'Error':'Y'},399)
+		except Exception as e:
+			print(e)
+			return Response({'Error':'Y'},399)
 
 class PushBucketConfirmation(APIView):
 
@@ -211,6 +218,7 @@ class PushBucketConfirmation(APIView):
 			return Response({'Error':'Y'},399)
 		
 		bucket.size_on_s3 = size
+		bucket.s3_bucket_key = '{}__{}'.format(user.s3_bucket_key,bucket.saved_as)
 		bucket.available = True
 		log = ActivityLog(user=user,bucket=bucket,action='Up')
 		log.save()

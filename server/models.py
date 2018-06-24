@@ -93,7 +93,7 @@ class UserManager(BaseUserManager):
         )
         pub_key,priv_key = user_util_generate_encrypted_key_pair(password)
         file_encryption_key = user_util_generate_file_encryption_key(password)
-        user.encrypted_file_encryption_key = file_encryption_key
+        user.encrypted_bucket_encryption_key = file_encryption_key
         user.pub_key = pub_key
         user.encrypted_priv_key = priv_key
 

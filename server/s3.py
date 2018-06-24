@@ -1,11 +1,6 @@
-# from boto3.session import Session
-
+import boto3
 ACCESS_KEY='AKIAJ6Z4VJKTOTZSFOYA'
 SECRET_KEY='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'
-
-# session = Session(aws_access_key_id=ACCESS_KEY,
-#                   aws_secret_access_key=SECRET_KEY)
-import boto3
 s3 = boto3.client('s3',aws_access_key_id=ACCESS_KEY,aws_secret_access_key=SECRET_KEY)
 
 
@@ -42,3 +37,4 @@ def get_directory_data(s3_key,s3_bucket_name='bashlist-7'):
 		return object_summary.size
 	except:
 		return None
+
