@@ -5,9 +5,9 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from server.models import User,Bucket,ActivityLog,SharedEncryptionKey
-from server.s3 import generate_s3_pull_url,generate_s3_push_url
+from server.s3 import generate_s3_pull_url,generate_s3_put_url
 from werkzeug import secure_filename
-from server.s3 import generate_s3_pull_url,generate_s3_push_url,get_directory_data
+from server.s3 import generate_s3_pull_url,generate_s3_put_url,get_directory_data
 
 class UserRegister(APIView):
 
@@ -150,7 +150,7 @@ class RequestPushBucketURL(APIView):
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
 			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
-			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
+			url = generate_s3_put_url(s3_bucket_key,size_limit=size)
 			return Response({'Error':'N','Exist':'Y','Shared':'N','Key':file_encryption_key,'URL':url})
 		except Bucket.DoesNotExist:
 			pass
@@ -165,7 +165,7 @@ class RequestPushBucketURL(APIView):
 				else:
 					return Response({'Error':'Y'},424)
 			s3_bucket_key = '{}__{}'.format(bucket_owner.id,bucket.saved_as)
-			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
+			url = generate_s3_put_url(s3_bucket_key,size_limit=size)
 			bucket_owner.virtual_size_used+=size
 			bucket_owner.save()
 			try:
@@ -189,7 +189,7 @@ class RequestPushBucketURL(APIView):
 			user.virtual_size_used+=size
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
-			url = generate_s3_push_url(s3_bucket_key,size_limit=size)
+			url = generate_s3_put_url(s3_bucket_key,size_limit=size)
 			return Response({'Error':'N','Exist':'N','Shared':'N','Key':file_encryption_key,'URL':url}) 
 		except Exception as e:
 			print(e)

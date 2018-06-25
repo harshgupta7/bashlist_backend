@@ -29,7 +29,22 @@ def generate_s3_push_url(s3_bucket_key,size_limit,s3_bucket_name='bashlist-7'):
     	Conditions=conditions,
     	ExpiresIn=600
 	)
+	# print(post)
 	return post
+
+
+def generate_s3_put_url(s3_bucket_key,size_limit,s3_bucket_name='bashlist-7'):
+	url = s3.generate_presigned_url(
+		ClientMethod='put_object',
+		Params={
+			'Bucket':s3_bucket_name,
+			'Key':s3_bucket_key,
+			# 'ContentLength':size_limit,
+			# 'ACL':'private',
+		},
+		ExpiresIn=600
+	)
+	return url	
 
 def get_directory_data(s3_key,s3_bucket_name='bashlist-7'):
 	try:
@@ -38,3 +53,4 @@ def get_directory_data(s3_key,s3_bucket_name='bashlist-7'):
 	except:
 		return None
 
+# print(generate_s3_put_url('hahahahah',size_limit=3232))
