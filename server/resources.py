@@ -5,9 +5,8 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from server.models import User,Bucket,ActivityLog,SharedEncryptionKey
-from server.s3 import generate_s3_pull_url,generate_s3_put_url
 from werkzeug import secure_filename
-from server.s3 import generate_s3_pull_url,generate_s3_put_url,get_directory_data
+from server.s3 import generate_s3_push_url,get_directory_data
 
 class UserRegister(APIView):
 
@@ -22,7 +21,7 @@ class UserRegister(APIView):
 		try:
 			user = User.objects.get(email=email)
 			if user:
-				return Response({'message':'Email already exists'})
+				return Response({'message':'Email alreaxy exists'})
 		except:
 			pass
 
@@ -150,7 +149,7 @@ class RequestPushBucketURL(APIView):
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
 			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
-			url = generate_s3_put_url(s3_bucket_key,size_limit=size)
+			url = generate_s3_push_url(s3_bucket_key,size_limit=1000*size)#1000x to specify in bytes
 			return Response({'Error':'N','Exist':'Y','Shared':'N','Key':file_encryption_key,'URL':url})
 		except Bucket.DoesNotExist:
 			pass
@@ -165,7 +164,7 @@ class RequestPushBucketURL(APIView):
 				else:
 					return Response({'Error':'Y'},424)
 			s3_bucket_key = '{}__{}'.format(bucket_owner.id,bucket.saved_as)
-			url = generate_s3_put_url(s3_bucket_key,size_limit=size)
+			url = generate_s3_push_url(s3_bucket_key,size_limit=size*1000)#1000x to specify in bytes
 			bucket_owner.virtual_size_used+=size
 			bucket_owner.save()
 			try:
@@ -189,7 +188,8 @@ class RequestPushBucketURL(APIView):
 			user.virtual_size_used+=size
 			user.save()
 			file_encryption_key = user.encrypted_bucket_encryption_key
-			url = generate_s3_put_url(s3_bucket_key,size_limit=size)
+			url = generate_s3_push_url(s3_bucket_key,size_limit=size*1000)#1000x to specify in bytes
+			print(url)
 			return Response({'Error':'N','Exist':'N','Shared':'N','Key':file_encryption_key,'URL':url}) 
 		except Exception as e:
 			print(e)
@@ -228,11 +228,36 @@ class PushBucketConfirmation(APIView):
 		return Response({'Error':'N'},225)
 
 class ShareBucketRequest(APIView):
-	pass 
+
+	def get(self,request,bucket_name,format='json'):
+
+		email = request.META.get('HTTP_EMAIL')
+		user = User.objects.get(email=email)
+
+		#case 1: bucket is owned by user
+		try:
+			bucket = Bucket.objects.get(name=bucket_name,owner=user,deleted=False,available=True)
+			decryption_key = user.encrypted_file_encryption_key
+			s3_bucket_key = '{}__{}'.format(user.id,bucket.saved_as)
+			return Response({'is_owner':'T','exist':'T'})
+		except Bucket.DoesNotExist:
+			pass 
+
+		#case 2: bucket is shared with user.
+		try:
+			bucket = Bucket.objects.get(is_shared=True,available=True,deleted=False,name=bucket_name,shared_with=user)
+			owner = bucket.owner
+			return Response({'shared':'F','exist':'T'})
+		except Bucket.DoesNotExist:
+			return Response({'exist':'F'},667)			
+ 
 
 
-class DeleteBucketRequest(APIView):
-	pass
+class DeleteBucketConfirm(APIView):
+	permission_classes = (IsAuthenticated,)
+	authentication_classes = (SimpleAuthentication,)
+
+
 
 class TestAuth(APIView):
 	permission_classes = (IsAuthenticated,)
@@ -243,8 +268,15 @@ class TestAuth(APIView):
 		return Response({'Valid':'T'})
 
 
+class ChangePassWordReqeust(APIView):
 
+	def get(self,request,format='json'):
+		pass 
 
+class ChangePassWordConfirmation(APIView):
+
+	def post(self,request,format='json'):
+		pass 
 
 
 

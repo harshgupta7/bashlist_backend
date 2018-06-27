@@ -130,7 +130,7 @@ class User(AbstractBaseUser):
 	pub_key = models.TextField(max_length=4096,blank=False,unique=True,null=False)
 	real_size_used = models.IntegerField(default=0, blank=False,null=False)
 	virtual_size_used = models.IntegerField(default=0, blank=False,null=False)
-	virtual_size_limit = models.IntegerField(default=1000000, blank=False,null=False)
+	virtual_size_limit = models.IntegerField(default=500000, blank=False,null=False)# in KB
 	s3_bucket = models.CharField(max_length=255,default='central')
 	s3_bucket_key = models.CharField(max_length=255,null=False,unique=True)
 	objects = UserManager()
