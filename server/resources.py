@@ -200,9 +200,10 @@ class PushBucketConfirmation(APIView):
 	permission_classes = (IsAuthenticated,)
 	authentication_classes = (SimpleAuthentication,)
 
-	def post(self):
+	def post(self,request,format='json'):
 		email = request.META.get('HTTP_EMAIL')
 		name = request.data.get('Name')
+		user = User.objects.get(email=email)
 		shared = request.data.get('Shared')
 		try:
 			description = request.data.get('HTTP_BLDESC')
@@ -212,13 +213,16 @@ class PushBucketConfirmation(APIView):
 			bucket = bucket.objects.get(is_shared=True,shared_with=user,name=name,available=True,deleted=False)
 		else:
 			bucket = Bucket.objects.get(owner=user,name=name,deleted=False)
-
-		size = get_directory_data(bucket.saved_as)
+		s3_bucket_key = s3_bucket_key='{}__{}'.format(user.s3_bucket_key,bucket.saved_as)
+		size = get_directory_data(s3_bucket_key)
+		# print(bucket.saved_as)
+		print(s3_bucket_key)
+		print(size)
 		if not size:
 			return Response({'Error':'Y'},399)
 		
 		bucket.size_on_s3 = size
-		bucket.s3_bucket_key = '{}__{}'.format(user.s3_bucket_key,bucket.saved_as)
+		bucket.s3_bucket_key = s3_bucket_key
 		bucket.available = True
 		log = ActivityLog(user=user,bucket=bucket,action='Up')
 		log.save()

@@ -26,7 +26,7 @@ class Bucket(models.Model):
 	s3_bucket_key = models.CharField(max_length=255,null=True,unique=True)
 	encrypted = models.BooleanField(default=True)
 	emailed_to = models.ManyToManyField('User',related_name='email_recs')
-	email_link_available = models.BooleanField(default=True)
+	email_link_available = models.BooleanField(default=False)
 	is_shared = models.BooleanField(default=False)
 	shared_with = models.ManyToManyField('User',related_name='shared_with_users')
 	available = models.BooleanField(default=True)

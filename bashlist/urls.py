@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from server.resources import UserRegister,TestAuth,GetAccountURL,GetList,RequestPushBucketURL
+from server.resources import UserRegister,TestAuth,GetAccountURL,GetList,RequestPushBucketURL,PushBucketConfirmation
 from django.views.decorators.csrf import csrf_exempt
 from django.conf.urls import handler404, handler500
 
@@ -30,5 +30,6 @@ urlpatterns = [
     path('api/v01/checkcredentials',csrf_exempt(TestAuth.as_view())),
     path('api/v01/getaccounturl',csrf_exempt(GetAccountURL.as_view())),
     path('api/v01/bashlist',csrf_exempt(GetList.as_view())),
-    path('api/v01/reqbushbucket',csrf_exempt(RequestPushBucketURL.as_view()))
+    path('api/v01/reqbushbucket',csrf_exempt(RequestPushBucketURL.as_view())),
+    path('api/v01/pbc',csrf_exempt(PushBucketConfirmation.as_view()))
 ]
