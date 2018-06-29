@@ -22,7 +22,7 @@ class Bucket(models.Model):
 	size = models.IntegerField(blank=False,null=False,default=0)
 	size_on_s3 = models.IntegerField(null=True)
 	description = models.TextField(max_length=500,null=True)
-	s3_bucket = models.CharField(max_length=255,default='central')
+	s3_bucket = models.CharField(max_length=255,default='bashlist-78')
 	s3_bucket_key = models.CharField(max_length=255,null=True,unique=True)
 	encrypted = models.BooleanField(default=True)
 	emailed_to = models.ManyToManyField('User',related_name='email_recs')
