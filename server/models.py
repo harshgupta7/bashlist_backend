@@ -96,7 +96,6 @@ class UserManager(BaseUserManager):
         user.encrypted_bucket_encryption_key = file_encryption_key
         user.pub_key = pub_key
         user.encrypted_priv_key = priv_key
-
         user.s3_bucket_key = user.id
         user.set_password(hashlib.sha256(password.encode()).hexdigest())
         user.save(using=self._db)

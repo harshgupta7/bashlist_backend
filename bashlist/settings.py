@@ -24,7 +24,7 @@ SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'h-_nyt*982)39e=3k=zggn7sd16l_&!2qvuj((v!_&l0p%y1u$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

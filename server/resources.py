@@ -44,13 +44,12 @@ class RequestEncCreds(APIView):
 	def get(self,request,format='json'):
 		email = request.META.get('HTTP_EMAIL')
 		user = User.objects.get(email=email)
-		try:
-			fileKey = user.encrypted_bucket_encryption_key
-			privKey = user.encrypted_priv_key
-			return Response({'fKey':fileKey,'pKey':privKey},398)
-		except:
-			return Response({'Error':'Unexpected Error'},399) 
-
+		
+		fileKey = user.encrypted_bucket_encryption_key
+		privKey = user.encrypted_priv_key
+		return Response({'fKey':fileKey,'pKey':privKey},398)
+		
+		
 class NewCredsPoster(APIView):
 	permission_classes = (IsAuthenticated,)
 	authentication_classes = (SimpleAuthentication,)
