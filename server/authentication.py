@@ -14,7 +14,7 @@ class SimpleAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed('No such user')
 
         if user.check_password(str(password)):
-        	return (user,None)
+            return (user,None)
       
         exceptions.AuthenticationFailed('Incorrect Password')
 
