@@ -1,10 +1,12 @@
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from server.models import Bucket, User
-from server.authentication import SimpleAuthentication
-from server.s3 import delete_object
 import datetime
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from server.authentication import SimpleAuthentication
+from server.models import Bucket, User
+from server.s3 import delete_object
 
 
 class GetBucketInfo(APIView):
@@ -22,7 +24,7 @@ class GetBucketInfo(APIView):
             if bucket.is_shared:
                 return Response({'shared': 'True', 'owner': 'True', 'exist': 'True'}, 200)
             else:
-                return Response({'shared': 'True', 'owner': 'True', 'exist': 'True'}, 200)
+                return Response({'shared': 'False', 'owner': 'True', 'exist': 'True'}, 200)
 
         except Bucket.DoesNotExist:
             pass
@@ -45,10 +47,11 @@ class DeleteBucketConf(APIView):
         user = User.objects.get(email=email)
 
         is_shared = shared == 'True'
-        owner = owner == 'True'
+        is_owner = owner == 'True'
 
-        if owner:
-            bucket = Bucket.objects.get(name=dir_name, owner=owner, is_shared=is_shared, deleted=False, available=True)
+        if is_owner:
+
+            bucket = Bucket.objects.get(name=dir_name, owner=user, is_shared=is_shared, deleted=False, available=True)
             bucket_size = bucket.size
             s3_size = bucket.size_on_s3
             user.virtual_size_used = user.virtual_size_used - bucket_size
@@ -73,4 +76,4 @@ class DeleteBucketConf(APIView):
                 bucket.shared_with.clear()
             bucket.save()
 
-        return Response({'done': 'True'},200)
+        return Response({'done': 'True'}, 200)
