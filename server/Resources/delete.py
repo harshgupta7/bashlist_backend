@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from server.models import Bucket,User
 from server.authentication import SimpleAuthentication
 import datetime
 
@@ -69,3 +70,5 @@ class DeleteBucketConf(APIView):
                 bucket.is_shared = False
                 bucket.shared_with.clear()
             bucket.save()
+
+        return Response({'done':'True'})
