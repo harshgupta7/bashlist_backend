@@ -1,6 +1,4 @@
 import boto3
-import requests
-import boto3
 
 ACCESS_KEY = 'AKIAICDC2ZVHRX25EYNQ'
 SECRET_KEY = '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'

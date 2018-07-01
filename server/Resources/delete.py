@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from server.models import Bucket, User
 from server.authentication import SimpleAuthentication
+from server.s3 import delete_object
 import datetime
 
 
@@ -53,6 +54,7 @@ class DeleteBucketConf(APIView):
             user.virtual_size_used = user.virtual_size_used - bucket_size
             user.real_size_used = user.real_size_used - s3_size
             user.save()
+            delete_object(bucket.s3_bucket_key)
             bucket.deleted = True
             bucket.deleted_at = datetime.datetime.now()
             bucket.s3_bucket_key = None

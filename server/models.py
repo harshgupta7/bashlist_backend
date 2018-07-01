@@ -1,8 +1,6 @@
 import uuid
 import hashlib
-from Crypto.PublicKey import RSA
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.base_user import AbstractBaseUser
 from rest_framework.authtoken.models import Token
