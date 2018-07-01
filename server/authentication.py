@@ -2,6 +2,7 @@ from rest_framework import authentication
 from rest_framework import exceptions
 from server.models import User
 
+
 class SimpleAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         username = request.META.get('HTTP_EMAIL')
@@ -14,9 +15,6 @@ class SimpleAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed('No such user')
 
         if user.check_password(str(password)):
-            return (user,None)
-      
+            return (user, None)
+
         exceptions.AuthenticationFailed('Incorrect Password')
-
-
-    

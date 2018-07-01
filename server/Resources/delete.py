@@ -73,4 +73,4 @@ class DeleteBucketConf(APIView):
                 bucket.shared_with.clear()
             bucket.save()
 
-        return Response({'done': 'True'})
+        return Response({'done': 'True'},200)

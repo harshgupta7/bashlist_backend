@@ -31,7 +31,7 @@ urlpatterns = [
     path('api/v01/getcreds', csrf_exempt(RequestEncCreds.as_view())),
     path('api/v01/postnewcreds', csrf_exempt(NewCredsPoster.as_view())),
     path('api/v01/gbi/<slug:dir_name>', csrf_exempt(GetBucketInfo.as_view())),
-    path('api/v01/dbuckconf/<slug:random_waste>/<slug:dir_name>/<slug:shared>/<slug:owner>',
+    path('api/v01/dbuckconf/<slug:dir_name>/<slug:shared>/<slug:owner>/<slug:random_waste>/',
          csrf_exempt(DeleteBucketConf.as_view()))
 
 ]
