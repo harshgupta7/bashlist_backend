@@ -31,4 +31,4 @@ class ShareBucketRequest(APIView):
             owner = bucket.owner
             return Response({'shared': 'F', 'exist': 'T'})
         except Bucket.DoesNotExist:
-            return Response({'exist': 'F'}, 667)
+            return Response({'exist': 'F'}, 367)

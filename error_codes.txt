@@ -1,5 +1,5 @@
-667 - No buckets found
-889 - User with <email> does not exist
+367 - No buckets found
+389 - User with <email> does not exist
 423 - insufficient space to store file size
 424 - insufficient space to store files for bucket owner
 399 - unexpected error

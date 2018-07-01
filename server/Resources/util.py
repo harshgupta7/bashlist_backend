@@ -53,5 +53,5 @@ class GetPublicKey(APIView):
         try:
             other = User.objects.get(email=other_user, deleted=False)
         except User.DoesNotExist:
-            return Response({'Error_message': 'User Does Not Exist'}, 889)
+            return Response({'Error_message': 'User Does Not Exist'}, 389)
         return Response({'pubkey': other.pub_key})

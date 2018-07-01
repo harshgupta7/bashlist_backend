@@ -30,7 +30,7 @@ urlpatterns = [
     path('api/v01/reqpull/<slug:bucket_name>', csrf_exempt(RequestPullBucketURL.as_view())),
     path('api/v01/getcreds', csrf_exempt(RequestEncCreds.as_view())),
     path('api/v01/postnewcreds', csrf_exempt(NewCredsPoster.as_view())),
-    path('api/v01/gbi', csrf_exempt(GetBucketInfo.as_view())),
+    path('api/v01/gbi/<slug:dir_name>', csrf_exempt(GetBucketInfo.as_view())),
     path('api/v01/dbuckconf/<slug:random_waste>/<slug:dir_name>/<slug:shared>/<slug:owner>',
          csrf_exempt(DeleteBucketConf.as_view()))
 

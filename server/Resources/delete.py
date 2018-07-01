@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from server.models import Bucket,User
+from server.models import Bucket, User
 from server.authentication import SimpleAuthentication
 import datetime
 
@@ -19,19 +19,19 @@ class GetBucketInfo(APIView):
         try:
             bucket = Bucket.objects.get(name=dir_name, owner=user, deleted=False, available=True)
             if bucket.is_shared:
-                return Response({'shared': 'True', 'owner': 'True', 'exist': 'True'})
+                return Response({'shared': 'True', 'owner': 'True', 'exist': 'True'}, 200)
             else:
-                return Response({'shared': 'True', 'owner': 'True', 'exist': 'True'})
+                return Response({'shared': 'True', 'owner': 'True', 'exist': 'True'}, 200)
 
         except Bucket.DoesNotExist:
             pass
 
         # Bucket where user is not owner but is shared with him
         try:
-            bucket = Bucket.objects.get(name=dir_name, is_shared=True, available=True, deleted=False, shared_with=user)
-            return Response({'shared': 'True', 'owner': 'False', 'exist': 'True'})
-        except:
-            return Response({'shared': 'False', 'owner': 'False', 'exist': 'False'})
+            Bucket.objects.get(name=dir_name, is_shared=True, available=True, deleted=False, shared_with=user)
+            return Response({'shared': 'True', 'owner': 'False', 'exist': 'True'}, 200)
+        except Bucket.DoesNotExist:
+            return Response({'shared': 'False', 'owner': 'False', 'exist': 'False'}, 367)
 
 
 class DeleteBucketConf(APIView):
@@ -71,4 +71,4 @@ class DeleteBucketConf(APIView):
                 bucket.shared_with.clear()
             bucket.save()
 
-        return Response({'done':'True'})
+        return Response({'done': 'True'})
