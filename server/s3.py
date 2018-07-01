@@ -6,7 +6,6 @@ ACCESS_KEY='AKIAICDC2ZVHRX25EYNQ'
 SECRET_KEY='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'
 
 
-
 def get_directory_data(s3_key,s3_bucket_name='bashlist-78'):
 
 	s3 = boto3.resource('s3',
@@ -51,4 +50,15 @@ def generate_get_url(s3_object_key,s3_bucket_name='bashlist-78'):
 		Params = {'Bucket': s3_bucket_name, 'Key': s3_object_key}, 
 		ExpiresIn = 600)
 	return url
+
+def delete_object(s3_object_key,s3_bucket_name='bashlist-78'):
+	s3 = boto3.resource('s3',
+		aws_access_key_id=ACCESS_KEY,
+		aws_secret_access_key=SECRET_KEY,
+		config=boto3.session.Config(signature_version='s3v4'))
+	try:
+		s3.Object(s3_bucket_name, s3_object_key).delete()
+		return 1
+	except:
+		return 0
 
