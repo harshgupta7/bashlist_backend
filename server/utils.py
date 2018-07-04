@@ -1,10 +1,13 @@
-import hashlib
 import base64
+import datetime
+import hashlib
+import random
+import string
+
 import Crypto.Random
 import M2Crypto.EVP
-import string
-import random
 from Crypto.PublicKey import RSA
+from dateutil import relativedelta
 
 SALTLEN = 8
 KEYLEN = 32
@@ -47,3 +50,24 @@ def user_util_generate_encrypted_key_pair(password):
     public_key, private_key = util_generate_key_pair()
     encrypted_private_key = util_encrypt(private_key, password)
     return public_key, encrypted_private_key
+
+
+def last_updated_calculator(updated_at):
+    nowtime = datetime.datetime.now()
+    difference = relativedelta.relativedelta(nowtime, updated_at)
+    if difference.years > 0:
+        return '{} years ago'.format(difference.years)
+    if difference.months > 0:
+        return '{} months ago'.format(difference.months)
+    if difference.weeks > 0:
+        return '{} weeks ago'.format(difference.weeks)
+    if difference.days > 0:
+        return '{} days ago'.format(difference.days)
+    if difference.hours > 0:
+        return '{} hours ago'.format(difference.hours)
+    if difference.minutes > 0:
+        return '{} minutes ago'.format(difference.minutes)
+    if difference.seconds > 0:
+        return '{} seconds ago'.format(difference.seconds)
+    else:
+        return 'Just now'

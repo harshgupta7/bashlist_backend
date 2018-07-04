@@ -19,10 +19,13 @@ class GetList(APIView):
         user = User.objects.get(email=email)
 
         try:
-            buckets = Bucket.objects.filter(owner=user, deleted=False)
-            if len(buckets) == 0:
+            buckets = Bucket.objects.filter(owner=user, deleted=False,available=True)
+            shared_buckets = Bucket.objects.filter(available=True,deleted=False,shared_with=user)
+            if len(buckets) == 0 and len(shared_buckets)==0:
                 return Response({"Empty": "T"})
             return_arr = [bucket.json_representation() for bucket in buckets]
+            for bucket in shared_buckets:
+                return_arr.append(bucket.json_representation())
             return Response({"Data": return_arr, "Empty": "F"})
         except Exception as e:
             return Response({"Error": "Y"}, 399)

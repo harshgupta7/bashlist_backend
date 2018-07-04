@@ -1,11 +1,14 @@
-import uuid
 import hashlib
-from django.db import models
-from django.contrib.auth.base_user import BaseUserManager
+import uuid
+
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import BaseUserManager
+from django.db import models
 from rest_framework.authtoken.models import Token
-from server.utils import user_util_generate_file_encryption_key
+
+from server.utils import last_updated_calculator
 from server.utils import user_util_generate_encrypted_key_pair
+from server.utils import user_util_generate_file_encryption_key
 
 
 class Bucket(models.Model):
@@ -40,13 +43,13 @@ class Bucket(models.Model):
             e = "Server Encryption"
 
         r = '{}/{}'.format(s, e)
-
+        u = last_updated_calculator(self.updated_at)
         return {
-            'Name': self.name,
-            'Size': self.size,
-            'Updated': self.updated_at,
-            'Description': self.description,
-            'Status': r
+            'Name': "{}".format(self.name),
+            'Size': "{}".format(str(self.size)),
+            'Updated': "{}".format(str(u)),
+            'Description': "{}".format(str(self.description)),
+            'Status': "{}".format(str(r))
         }
 
 
@@ -69,7 +72,7 @@ class ActivityLog(models.Model):
 class SharedEncryptionKey(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    enrypted_bucket_encryption_key = models.TextField(max_length=4096,
+    encrypted_bucket_encryption_key = models.TextField(max_length=4096,
                                                       null=False)  # key is encrypted by key_owner's public key
     bucket = models.ForeignKey('Bucket', on_delete=models.CASCADE)
     key_owner = models.ForeignKey('User', on_delete=models.CASCADE)
