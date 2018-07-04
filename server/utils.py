@@ -71,3 +71,22 @@ def last_updated_calculator(updated_at):
         return '{} seconds ago'.format(difference.seconds)
     else:
         return 'Just now'
+
+
+def size_expression_calculator(sizeint):
+
+    orig = sizeint
+
+    if sizeint < 1000:
+        return '{} KB'.format(sizeint)
+    sizeint = int(sizeint/1000)
+    if sizeint < 1000:
+        return '{} MB'.format(sizeint)
+    sizeint = int(sizeint/1000)
+    if sizeint < 1000:
+        return '{} GB'.format(sizeint)
+    sizeint = int(sizeint/1000)
+    if sizeint < 1000:
+        return '{} TB'.format(sizeint)
+    else:
+        return '{} KB'.format(orig)

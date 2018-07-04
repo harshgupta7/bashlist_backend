@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from server.utils import last_updated_calculator
 from server.utils import user_util_generate_encrypted_key_pair
 from server.utils import user_util_generate_file_encryption_key
+from server.utils import size_expression_calculator
 
 
 class Bucket(models.Model):
@@ -44,9 +45,10 @@ class Bucket(models.Model):
 
         r = '{}/{}'.format(s, e)
         u = last_updated_calculator(self.updated_at)
+        size_expr = size_expression_calculator(self.size)
         return {
-            'Name': "{}".format(self.name),
-            'Size': "{}".format(str(self.size)),
+            'Name': "{}".format(str(self.name)),
+            'Size': "{}".format(str(size_expr)),
             'Updated': "{}".format(str(u)),
             'Description': "{}".format(str(self.description)),
             'Status': "{}".format(str(r))
