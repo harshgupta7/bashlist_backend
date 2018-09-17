@@ -1,7 +1,7 @@
 import boto3
 
-ACCESS_KEY = 'AKIAICDC2ZVHRX25EYNQ'
-SECRET_KEY = '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'
+ACCESS_KEY = ''
+SECRET_KEY = ''
 
 
 def get_directory_data(s3_key, s3_bucket_name='bashlist-78'):
