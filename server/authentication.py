@@ -5,6 +5,9 @@ from server.models import User
 
 class SimpleAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
+        """
+        simple method to check username and password
+        """
         username = request.META.get('HTTP_EMAIL')
         password = request.META.get('HTTP_PASSWORD')
         if not username or not password:
